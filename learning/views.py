@@ -55,16 +55,51 @@ def personalized_dashboard(request):
     learning_paths = LearningPath.objects.filter(user=request.user)
     return render(request, 'learning/personalized_dashboard.html', {'learning_paths': learning_paths})
 
+# def signup(request):
+#     if request.method == 'POST':
+#         form = UserCreationForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             login(request, user)
+#             return redirect('personalized_dashboard')
+#     else:
+#         form = UserCreationForm()
+#     return render(request, 'learning/signup.html', {'form': form})
+
+
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.first_name = form.cleaned_data.get('first_name')
+            user.last_name = form.cleaned_data.get('last_name')
+            user.email = form.cleaned_data.get('email')
+            user.save()
             login(request, user)
             return redirect('personalized_dashboard')
     else:
-        form = UserCreationForm()
+        form = UserRegistrationForm()
     return render(request, 'learning/signup.html', {'form': form})
+
+
+
+    # if request.method == 'POST':
+    #     form = UserRegistrationForm(request.POST)
+    #     if form.is_valid():
+    #         user = form.save()
+    #         user.refresh_from_db()  # Load the profile instance created by the signal
+    #         user.profile.first_name = form.cleaned_data.get('first_name')
+    #         user.profile.last_name = form.cleaned_data.get('last_name')
+    #         user.profile.email = form.cleaned_data.get('email')
+    #         user.save()
+    #         login(request, user)
+    #         return redirect('personalized_dashboard')
+    # else:
+    #     form = UserRegistrationForm()
+    # return render(request, 'learning/signup.html', {'form': form})
+
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -81,6 +116,33 @@ def login_view(request):
 
 def logout_view(request):
     return render(request, 'learning/logout.html')
+
+
+from .forms import ContactForm
+from .models import ContactMessage
+
+def contact_us(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Save the message to the database
+            ContactMessage.objects.create(
+                name=form.cleaned_data['name'],
+                email=form.cleaned_data['email'],
+                message=form.cleaned_data['message']
+            )
+            return redirect('contact_success')
+    else:
+        form = ContactForm()
+    return render(request, 'learning/contact_us.html', {'form': form})
+
+def contact_success(request):
+    return render(request, 'learning/contact_success.html')
+
+
+
+
+
 
 @login_required
 def dashboard_view(request):

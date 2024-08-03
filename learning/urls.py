@@ -21,6 +21,8 @@ urlpatterns = [
     path('virtual-trading/', views.virtual_trading_dashboard, name='virtual_trading_dashboard'),
     path('execute-trade/', views.execute_trade, name='execute_trade'),
     path('candlestick-chart/', views.candlestick_chart, name='candlestick_chart'),
+    path('contact/', views.contact_us, name='contact_us'),
+    path('contact_success/', views.contact_success, name='contact_success'),
 ]
 
 
