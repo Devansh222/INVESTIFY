@@ -226,7 +226,7 @@ import plotly.graph_objects as go
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.db.models import Sum
 def get_stock_details_yahoo(symbol):
     stock = yf.Ticker(symbol)
     return {
@@ -266,6 +266,16 @@ def execute_trade(request):
 
         portfolio = Portfolio.objects.get(user=request.user)
 
+        # Check if the user has enough quantity of the stock to sell
+        if trade_type == 'sell':
+            user_stock_quantity = Trade.objects.filter(user=request.user, stock=stock, trade_type='buy').aggregate(Sum('quantity'))['quantity__sum'] or 0
+            user_sold_quantity = Trade.objects.filter(user=request.user, stock=stock, trade_type='sell').aggregate(Sum('quantity'))['quantity__sum'] or 0
+            available_quantity = user_stock_quantity - user_sold_quantity
+
+            if available_quantity < quantity:
+                messages.error(request, f'Insufficient quantity to execute the trade. You have {available_quantity} shares of {symbol}.')
+                return redirect('virtual_trading_dashboard')
+
         if trade_type == 'buy' and portfolio.balance < price * quantity:
             messages.error(request, 'Insufficient balance to execute the trade')
             return redirect('virtual_trading_dashboard')
@@ -291,6 +301,7 @@ def execute_trade(request):
     else:
         messages.error(request, 'Invalid request method')
         return redirect('virtual_trading_dashboard')
+
 
 def fetch_stock_data_yahoo(symbol):
     stock = yf.Ticker(symbol)
