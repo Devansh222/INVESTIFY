@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Video, Course, Quiz, Webinar, LearningPath, Stock, Portfolio, Trade, ContactMessage
+from .models import Video, Course, Quiz, Webinar, LearningPath, Stock, Portfolio, Trade, ContactMessage, Post, Comment
 from .models import Question, Option
 
 
@@ -20,3 +20,5 @@ admin.site.register(Stock)
 admin.site.register(Portfolio)
 admin.site.register(Trade)
 admin.site.register(ContactMessage)
+admin.site.register(Post)
+admin.site.register(Comment)
