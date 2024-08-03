@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Video, Course, Quiz, Webinar, LearningPath, Stock, Portfolio, Trade, ContactMessage, Post, Comment
+from .models import Video, Course, Quiz, Webinar, LearningPath, Stock, Portfolio, Trade, ContactMessage, Post, Comment, UserProfile
 from .models import Question, Option
 
 
@@ -9,6 +9,7 @@ class OptionInline(admin.TabularInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [OptionInline]
+
 
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Video)
@@ -22,3 +23,4 @@ admin.site.register(Trade)
 admin.site.register(ContactMessage)
 admin.site.register(Post)
 admin.site.register(Comment)
+
